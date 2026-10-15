@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<title>Fener Mail Takip — Ayarlar</title>
+<style>
+  :root { --ink:#1f2937; --muted:#6b7280; --line:#e5e7eb; --accent:#174ea6; --ok:#137333; --bad:#b3261e; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:#f8fafc; color:var(--ink); font:14px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif; }
+  main { max-width:620px; margin:40px auto; padding:0 16px; }
+  h1 { font-size:20px; margin:0 0 4px; }
+  p.lead { color:var(--muted); margin:0 0 24px; }
+  .card { background:#fff; border:1px solid var(--line); border-radius:12px; padding:20px; margin-bottom:16px; }
+  label { display:block; font-weight:600; margin:14px 0 4px; }
+  label:first-child { margin-top:0; }
+  .hint { color:var(--muted); font-size:12px; margin-top:4px; }
+  input[type=text], input[type=password] { width:100%; padding:9px 11px; border:1px solid #cbd5e1; border-radius:8px; font:13px/1.4 ui-monospace, Menlo, monospace; }
+  input:focus { outline:2px solid #c7d7fe; border-color:var(--accent); }
+  .row { display:flex; gap:10px; align-items:center; margin-top:18px; flex-wrap:wrap; }
+  button { padding:9px 16px; border-radius:8px; border:1px solid var(--accent); background:var(--accent); color:#fff; font-weight:600; cursor:pointer; }
+  button.secondary { background:#fff; color:var(--accent); }
+  .switch { display:flex; gap:10px; align-items:center; font-weight:600; }
+  #status { font-size:13px; }
+  .ok { color:var(--ok); } .bad { color:var(--bad); }
+  code { background:#f1f5f9; padding:1px 5px; border-radius:4px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>📬 Fener Mail Takip</h1>
+  <p class="lead">Gmail'den gönderdiğin her maile otomatik takip ekler. Sonuçlar <b>Mail Takip</b> Sheet'indeki <b>Gönderimler</b> ve <b>Olaylar</b> sekmelerine düşer.</p>
+
+  <div class="card">
+    <label class="switch"><input type="checkbox" id="enabled"> Takip açık</label>
+    <div class="hint">Kapalıyken mailler takipsiz gönderilir. Tek bir mail için Gmail'in yazma penceresindeki <code>📬 Takip açık</code> düğmesine tıklayarak da kapatabilirsin.</div>
+  </div>
+
+  <div class="card">
+    <label for="workerUrl">Worker adresi</label>
+    <input type="text" id="workerUrl" placeholder="https://mail-tracker.hesabin.workers.dev">
+
+    <label for="webhookUrl">Sheet web uygulaması adresi</label>
+    <input type="text" id="webhookUrl" placeholder="https://script.google.com/macros/s/…/exec">
+    <div class="hint">Cloudflare'deki <code>SHEET_WEBHOOK</code> değerinin aynısı (<code>/exec</code> ile biter).</div>
+
+    <label for="secret">Gizli anahtar (SECRET)</label>
+    <input type="password" id="secret" placeholder="64 karakter">
+    <div class="hint">Mail Takip Apps Script projesi → ⚙️ Project Settings → Script properties → <code>SECRET</code>.</div>
+
+    <div class="row">
+      <button id="save">Kaydet</button>
+      <button id="test" class="secondary">Bağlantıyı test et</button>
+      <span id="status"></span>
+    </div>
+  </div>
+
+  <div class="card" id="lastCard" hidden>
+    <b>Son kayıt</b>
+    <div id="last" class="hint"></div>
+  </div>
+</main>
+<script src="config.js"></script>
+<script src="options.js"></script>
+</body>
+</html>

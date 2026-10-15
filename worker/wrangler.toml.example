@@ -1,0 +1,9 @@
+# Komut satırından yayınlamak için:
+#   1. Bu dosyayı wrangler.toml olarak kopyala
+#   2. npx wrangler deploy
+#   3. npx wrangler secret put SECRET            (Apps Script'in ürettiği gizli anahtar)
+#   4. npx wrangler secret put SHEET_WEBHOOK     (…/exec ile biten web uygulaması adresi)
+
+name = "mail-takip"
+main = "worker.js"
+compatibility_date = "2026-01-01"

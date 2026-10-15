@@ -1,0 +1,20 @@
+# Gizli bilgiler ve yerel yapılandırma
+.env
+.env.*
+.dev.vars
+worker/wrangler.toml
+.wrangler/
+.clasp.json
+.clasprc.json
+
+# Paketlenmiş eklenti
+*.zip
+*.crx
+*.pem
+
+# Sistem / editör
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+node_modules/
