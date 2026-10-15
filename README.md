@@ -72,11 +72,45 @@ Adım adım anlatım için **[docs/KURULUM.md](docs/KURULUM.md)** dosyasına bak
 
 ## Gizlilik ve yasal sorumluluk
 
-E-posta açılma ve tıklama takibi kişisel veri işlemesidir. Bu aracı kullanan kişi, alıcılarına karşı **KVKK** (Türkiye), **GDPR** (AB) ve yürürlükteki diğer mevzuattan **kendisi sorumludur**.
+E-posta açılma ve tıklama takibi kişisel veri işlemesidir. Bu aracı kullanan kişi, takip ettiği alıcılara karşı **veri sorumlusudur** ve **KVKK** (Türkiye), **GDPR** (AB) ile yürürlükteki diğer mevzuata uymaktan **kendisi sorumludur**.
 
-- Gönderdiğin maillerde veya gizlilik politikanda, açılma ve tıklama ölçümü yaptığını belirt.
-- Topladığın veriyi yalnızca iletişim amacıyla kullan ve gereğinden uzun saklama.
-- Worker; IP adresi kaydetmez. Ülke, ağ (ASN) ve tarayıcı bilgisini kaydeder.
+### Hangi veriler işlenir?
+
+| Veri | Nereden gelir |
+|---|---|
+| Alıcının e-posta adresi ve mailin konusu | Gmail'deki yazma penceresi veya Gönderilmiş klasörü |
+| Açılma ve tıklama zamanı, tıklanan link | Alıcı maili açtığında veya linke tıkladığında |
+| Ülke, ağ (ASN) ve tarayıcı (User-Agent) bilgisi | Cloudflare'in istekle birlikte ilettiği bilgiler |
+
+Worker **IP adresi kaydetmez**. Veriler senin Google Sheet'inde, Cloudflare hesabında ve tarayıcında durur. Bu servislerin sunucuları yurt dışında olabilir.
+
+### Aydınlatma yükümlülüğü
+
+KVKK'nın 10. maddesi gereği, kişisel verisini işlediğin kişileri bu konuda **bilgilendirmen gerekir**. Bu aracı kullanıyorsan en azından şunları yap:
+
+1. **Maillerinde kısa bir bilgilendirme notu bulunsun.** Gmail imzana ya da mailin altına eklemen yeterli. Örnek:
+
+   > Bu e-postadaki açılma ve bağlantı tıklamaları, iletişimimizi iyileştirmek amacıyla ölçülmektedir. Ayrıntılı bilgi ve itiraz için: ornek.com/gizlilik
+
+2. **Gizlilik politikanda veya aydınlatma metninde** şunları belirt:
+   - Veri sorumlusunun kimliği
+   - Hangi verilerin, hangi amaçla işlendiği
+   - Hukuki sebep (ör. meşru menfaat veya açık rıza)
+   - Verilerin aktarıldığı yerler (Google, Cloudflare; yurt dışı dahil)
+   - Saklama süresi
+   - Kişinin KVKK m.11'deki hakları ve sana nasıl başvurabileceği
+
+3. **İtiraz edene uy.** Biri takip edilmek istemediğini veya verilerinin silinmesini isterse, ona giden maillerde takibi kapat (Gmail'de **📭 Takip kapalı** etiketi) ve Sheet'teki satırlarını sil.
+
+### Diğer öneriler
+
+- **Saklama süresi belirle** ve süresi dolan kayıtları sil (ör. 12 ay).
+- **Takibi iş iletişimiyle sınırla.** Kişisel yazışmalarda kapat.
+- **Pazarlama ve tanıtım maillerinde** 6563 sayılı Kanun ve İYS kurallarına da uy. Örneğin her mailde ret (abonelikten çıkma) imkânı bulunmalı.
+- **Yurt dışına aktarım:** Google ve Cloudflare kullanımı KVKK m.9 kapsamında değerlendirilebilir. Gerekli sözleşme ve bildirim şartlarını kontrol et.
+- **AB'deki alıcılar için** izleme pikselleri birçok denetim kurumu tarafından açık rıza gerektiren bir uygulama olarak görülüyor.
+
+> **Not:** Bu bölüm genel bilgilendirme amaçlıdır, hukuki tavsiye değildir. Özellikle toplu veya pazarlama amaçlı gönderimlerde bir hukuk danışmanına başvurman önerilir.
 
 Bu yazılım "olduğu gibi" sunulur; ayrıntılar için [LICENSE](LICENSE) dosyasına bak.
 

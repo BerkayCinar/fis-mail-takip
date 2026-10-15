@@ -68,6 +68,8 @@ Komut satırını tercih edersen [`worker/wrangler.toml.example`](../worker/wran
 - Takibi tamamen kapatmak için araç çubuğundaki eklenti simgesinden **Takip açık** kutusunun işaretini kaldır.
 - Eklenti simgesi; sürümü, son işlemi ve son Sheet kaydını gösterir.
 
+> **Göndermeye başlamadan önce:** Alıcılarını takip ettiğin konusunda bilgilendirmen gerekir (KVKK m.10). Gmail imzana kısa bir bilgilendirme notu ekle. Örnek metin ve diğer yükümlülükler için README'deki [Aydınlatma yükümlülüğü](../README.md#aydınlatma-yükümlülüğü) bölümüne bak.
+
 ## 6. *(İsteğe bağlı)* Gmail eklentisi: "Takip ekle" butonu
 
 Chrome eklentisinin olmadığı yerlerde, örneğin başka bir bilgisayarda, yazma penceresine elle takip eklemek için kullanılır.
