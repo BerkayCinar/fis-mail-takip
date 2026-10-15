@@ -1,5 +1,5 @@
 /**
- * Fener Mail Takip — arka plan
+ * FiS Mail Takip — arka plan
  *  - İçerik betiğinden gelen "register" isteklerini Sheet'e (Apps Script) iletir.
  *  - Gmail'in yazma penceresinde pikselin senin tarayıcında yüklenmesini engeller
  *    (aksi halde mail daha gönderilmeden "açıldı" kaydı oluşurdu).
@@ -9,7 +9,7 @@ importScripts("config.js");
 const RULE_ID = 1;
 
 async function getCfg() {
-  return chrome.storage.local.get(FENER_DEFAULTS);
+  return chrome.storage.local.get(FIS_DEFAULTS);
 }
 
 async function refreshBlockRule() {

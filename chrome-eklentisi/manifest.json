@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
-  "name": "Fener Mail Takip",
-  "version": "1.1.0",
+  "name": "FiS Mail Takip",
+  "version": "1.1.1",
   "description": "Gmail'den gönderilen her maile otomatik açılma ve tıklama takibi ekler. Veriler Mail Takip Google Sheet'ine düşer.",
   "icons": {
     "16": "icons/16.png",
@@ -27,7 +27,7 @@
     }
   ],
   "action": {
-    "default_title": "Fener Mail Takip",
+    "default_title": "FiS Mail Takip",
     "default_popup": "popup.html"
   },
   "options_page": "options.html"

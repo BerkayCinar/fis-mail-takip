@@ -1,5 +1,5 @@
 /**
- * Fener Mail Takip — Gmail Eklentisi ("📬 Takip ekle" butonu)
+ * FiS Mail Takip — Gmail Eklentisi ("📬 Takip ekle" butonu)
  *
  * Gmail'de yeni mail yazarken alttaki eklenti simgesine basınca açılır.
  *  - "Takip ekle": maile görünmez takip pikselini ekler ve maili
@@ -22,7 +22,7 @@ const METHOD_PENDING = "Eklenti — gönderilmedi";
 
 function onHomepage() {
   return CardService.newCardBuilder()
-    .setHeader(CardService.newCardHeader().setTitle("📬 Fener Mail Takip"))
+    .setHeader(CardService.newCardHeader().setTitle("📬 FiS Mail Takip"))
     .addSection(
       CardService.newCardSection().addWidget(
         CardService.newTextParagraph().setText(

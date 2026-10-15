@@ -5,7 +5,7 @@ const status = (text, cls) => {
 };
 
 async function load() {
-  const v = await chrome.storage.local.get(Object.assign({ lastRegister: null, lastTest: null }, FENER_DEFAULTS));
+  const v = await chrome.storage.local.get(Object.assign({ lastRegister: null, lastTest: null }, FIS_DEFAULTS));
   $("enabled").checked = v.enabled;
   $("workerUrl").value = v.workerUrl;
   $("webhookUrl").value = v.webhookUrl;
@@ -41,7 +41,7 @@ $("test").addEventListener("click", async () => {
   try {
     const w = await fetch($("workerUrl").value.trim().replace(/\/+$/, "") + "/");
     const wt = await w.text();
-    if (!/Fener Mail Takip/.test(wt)) return status("Worker'a ulaşıldı ama beklenen yanıt gelmedi. Adresi kontrol et.", "bad");
+    if (!/Mail Takip çalışıyor/.test(wt)) return status("Worker'a ulaşıldı ama beklenen yanıt gelmedi. Adresi kontrol et.", "bad");
   } catch (e) {
     return status("Worker'a ulaşılamadı: " + e, "bad");
   }

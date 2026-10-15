@@ -1,5 +1,5 @@
 /**
- * Fener Mail Takip — Gmail içerik betiği (1.1)
+ * FiS Mail Takip — Gmail içerik betiği (1.1)
  *
  * Gönder tıklamasına bağlı DEĞİL: Gmail'deki başka eklentiler (InboxSDK
  * tabanlı araçlar gibi) tıklamayı yakalayıp durdurabildiği için takip, mail
@@ -19,7 +19,7 @@
 (function () {
   "use strict";
 
-  let cfg = Object.assign({}, FENER_DEFAULTS);
+  let cfg = Object.assign({}, FIS_DEFAULTS);
   let cfgLoaded = false;
 
   const EDITOR_SEL =
@@ -153,7 +153,7 @@
   function existingPixel(body) {
     const w = base();
     return (
-      body.querySelector("img[data-fener-pixel]") ||
+      body.querySelector("img[data-fis-pixel]") ||
       Array.from(body.querySelectorAll("img")).find(
         (i) => (i.getAttribute("src") || "").indexOf(w + "/o/") === 0
       )
@@ -161,7 +161,7 @@
   }
 
   function arm(root) {
-    if (!root || !ready() || root.dataset.fenerSkip === "1") return;
+    if (!root || !ready() || root.dataset.fisSkip === "1") return;
     const body = editorOf(root);
     if (!body) return;
     const to = recipientsOf(root);
@@ -170,18 +170,18 @@
     const w = base();
     const px = existingPixel(body);
     const pxId = px
-      ? px.dataset.fenerPixel ||
+      ? px.dataset.fisPixel ||
         ((px.getAttribute("src") || "").match(/\/o\/([A-Za-z0-9_-]+)\.gif/) || [])[1]
       : "";
-    const id = root.dataset.fenerId || pxId || newId();
-    root.dataset.fenerId = id;
+    const id = root.dataset.fisId || pxId || newId();
+    root.dataset.fisId = id;
 
     // Linkleri takip linkine çevir (alıntılanan eski mesajlar hariç)
     body.querySelectorAll("a[href]").forEach((a) => {
       if (a.closest(".gmail_quote, blockquote")) return;
       const href = a.getAttribute("href") || "";
       if (!/^https?:\/\//i.test(href) || href.indexOf(w + "/") === 0) return;
-      const sig = fenerHmacHex(cfg.secret, id + "|" + href).slice(0, 16);
+      const sig = fisHmacHex(cfg.secret, id + "|" + href).slice(0, 16);
       originalHref.set(a, href);
       a.setAttribute("href", w + "/c/" + id + "?u=" + encodeURIComponent(href) + "&s=" + sig);
     });
@@ -194,14 +194,14 @@
       img.height = 1;
       img.alt = "";
       img.setAttribute("style", "display:block;width:1px;height:1px;border:0;");
-      img.dataset.fenerPixel = id;
+      img.dataset.fisPixel = id;
       body.appendChild(img);
     }
 
     // Sheet kaydı: alıcı veya konu değiştikçe güncellenir
     const subject = subjectOf(root);
     const sig = id + "|" + to.join(",") + "|" + subject;
-    if (root.dataset.fenerReg !== sig) {
+    if (root.dataset.fisReg !== sig) {
       const sent = send({
         kind: "register",
         payload: {
@@ -213,27 +213,27 @@
         },
       });
       if (sent) {
-        root.dataset.fenerReg = sig;
+        root.dataset.fisReg = sig;
         note("Takip hazır: " + to.join(", "));
       }
     }
-    const chip = root.querySelector(".fener-chip");
+    const chip = root.querySelector(".fis-chip");
     if (chip) updateChip(chip);
   }
 
   function disarm(root) {
     const body = editorOf(root);
-    const id = root.dataset.fenerId;
+    const id = root.dataset.fisId;
     if (body) {
-      body.querySelectorAll("img[data-fener-pixel]").forEach((img) => img.remove());
+      body.querySelectorAll("img[data-fis-pixel]").forEach((img) => img.remove());
       body.querySelectorAll("a[href]").forEach((a) => {
         const orig = originalHref.get(a);
         if (orig) a.setAttribute("href", orig);
       });
     }
-    if (id && root.dataset.fenerReg) send({ kind: "register", payload: { type: "unregister", id: id } });
-    delete root.dataset.fenerReg;
-    delete root.dataset.fenerId;
+    if (id && root.dataset.fisReg) send({ kind: "register", payload: { type: "unregister", id: id } });
+    delete root.dataset.fisReg;
+    delete root.dataset.fisId;
   }
 
   function armAll() {
@@ -271,8 +271,8 @@
 
   function updateChip(chip) {
     const root = composeRootFrom(chip);
-    const skip = root && root.dataset.fenerSkip === "1";
-    const armed = root && root.dataset.fenerReg;
+    const skip = root && root.dataset.fisSkip === "1";
+    const armed = root && root.dataset.fisReg;
     let text, title, dim;
     if (!ready()) {
       text = "📬 Takip: ayar eksik";
@@ -298,9 +298,9 @@
 
   function addChip(sendBtn) {
     const anchor = sendBtn.closest(".dC") || sendBtn;
-    if (!anchor.parentElement || anchor.parentElement.querySelector(".fener-chip")) return;
+    if (!anchor.parentElement || anchor.parentElement.querySelector(".fis-chip")) return;
     const chip = document.createElement("span");
-    chip.className = "fener-chip";
+    chip.className = "fis-chip";
     chip.setAttribute(
       "style",
       "display:inline-flex;align-items:center;margin-left:8px;padding:2px 8px;border-radius:12px;" +
@@ -313,11 +313,11 @@
       e.stopPropagation();
       const root = composeRootFrom(chip);
       if (!root) return;
-      if (root.dataset.fenerSkip === "1") {
-        root.dataset.fenerSkip = "0";
+      if (root.dataset.fisSkip === "1") {
+        root.dataset.fisSkip = "0";
         arm(root);
       } else {
-        root.dataset.fenerSkip = "1";
+        root.dataset.fisSkip = "1";
         disarm(root);
       }
       updateChip(chip);
@@ -332,7 +332,7 @@
 
   function isOwnPixel(img) {
     const h = host();
-    if (!h || img.dataset.fenerPixel || img.closest('[contenteditable="true"]')) return false;
+    if (!h || img.dataset.fisPixel || img.closest('[contenteditable="true"]')) return false;
     const src = img.getAttribute("src") || "";
     return src.indexOf(h + "/o/") !== -1;
   }
@@ -367,7 +367,7 @@
   /* Ayarlar                                                           */
   /* ---------------------------------------------------------------- */
 
-  chrome.storage.local.get(FENER_DEFAULTS, (v) => {
+  chrome.storage.local.get(FIS_DEFAULTS, (v) => {
     cfg = v;
     cfgLoaded = true;
     if (document.documentElement) scan(document.documentElement);
@@ -375,8 +375,8 @@
   chrome.storage.onChanged.addListener((changes, area) => {
     if (area !== "local") return;
     for (const k in changes) {
-      if (k in FENER_DEFAULTS) cfg[k] = changes[k].newValue;
+      if (k in FIS_DEFAULTS) cfg[k] = changes[k].newValue;
     }
-    document.querySelectorAll(".fener-chip").forEach(updateChip);
+    document.querySelectorAll(".fis-chip").forEach(updateChip);
   });
 })();

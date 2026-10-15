@@ -1,5 +1,5 @@
 /**
- * Fener Mail Takip — Cloudflare Worker
+ * FiS Mail Takip — Cloudflare Worker
  *
  * Rotalar:
  *   GET /o/<id>.gif                 → açılma kaydı + 1x1 şeffaf GIF
@@ -72,7 +72,7 @@ export default {
       });
     }
 
-    return new Response("Fener Mail Takip çalışıyor.", {
+    return new Response("FiS Mail Takip çalışıyor.", {
       headers: { "Content-Type": "text/plain; charset=utf-8" },
     });
   },

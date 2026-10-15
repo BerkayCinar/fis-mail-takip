@@ -1,6 +1,6 @@
 (async () => {
   const v = await chrome.storage.local.get(
-    Object.assign({ lastRegister: null, lastAttempt: null }, FENER_DEFAULTS)
+    Object.assign({ lastRegister: null, lastAttempt: null }, FIS_DEFAULTS)
   );
   const el = (id) => document.getElementById(id);
   const configured = v.workerUrl && v.webhookUrl && v.secret;

@@ -1,5 +1,5 @@
 /**
- * Fener Mail Takip — Google Apps Script
+ * FiS Mail Takip — Google Apps Script
  * Bir Google Sheet'e bağlı çalışır (Uzantılar > Apps Script).
  *
  * Sekmeler:
@@ -392,7 +392,7 @@ function registerSend_(d) {
 }
 
 function doGet() {
-  return text_("Fener Mail Takip kayıt servisi çalışıyor.");
+  return text_("FiS Mail Takip kayıt servisi çalışıyor.");
 }
 
 function text_(s) {

@@ -1,6 +1,6 @@
 // Varsayılan ayarlar. Gerçek değerler eklentinin Ayarlar sayfasından girilir
 // ve tarayıcıda (chrome.storage.local) saklanır; bu dosyaya yazmayın.
-var FENER_DEFAULTS = {
+var FIS_DEFAULTS = {
   enabled: true,
   workerUrl: "",
   webhookUrl: "",
