@@ -50,6 +50,8 @@ function onOpen() {
     .addSeparator()
     .addItem("Kuyruktakileri Gmail taslağı yap", "createDrafts")
     .addItem("Kuyruktakileri hemen gönder", "sendNow")
+    .addSeparator()
+    .addItem("Eksik alıcı/konu bilgilerini tamamla", "fillMissing")
     .addToUi();
 }
 
@@ -414,8 +416,20 @@ function record_(d) {
     .createTextFinder(id)
     .matchEntireCell(true)
     .findNext();
-  const range = cell ? sent.getRange(cell.getRow(), 1, 1, SENT_HEADERS.length) : null;
-  const row = range ? range.getValues()[0] : null;
+  let range = cell ? sent.getRange(cell.getRow(), 1, 1, SENT_HEADERS.length) : null;
+  let row = range ? range.getValues()[0] : null;
+
+  // Eklentinin kaydı Sheet'e hiç ulaşmadıysa (ör. eklenti güncellendikten sonra
+  // Gmail sekmesi yenilenmedi) maili Gönderilmiş klasöründe takip kimliğinden
+  // bul ve satırı şimdi aç.
+  if (!row) {
+    const m = findSentById_(id, 30);
+    if (m) {
+      sent.appendRow(sentRowFromMessage_(id, m));
+      range = sent.getRange(sent.getLastRow(), 1, 1, SENT_HEADERS.length);
+      row = range.getValues()[0];
+    }
+  }
 
   if (row) refreshDraftStatus_(row);
   const verdict = classify_(d, row, ts);
@@ -434,7 +448,12 @@ function record_(d) {
   ]);
 
   if (!row) return;
+  applyEvent_(row, d, ts, verdict);
+  range.setValues([row]);
+}
 
+/** Olayı Gönderimler satırındaki sayaçlara işler. */
+function applyEvent_(row, d, ts, verdict) {
   if (verdict.ignore) {
     // sayılmaz (ör. taslağı kendiniz önizlediniz)
   } else if (d.type === "click") {
@@ -450,7 +469,103 @@ function record_(d) {
     if (!row[C.FIRST_OPEN]) row[C.FIRST_OPEN] = ts;
     row[C.LAST_OPEN] = ts;
   }
-  range.setValues([row]);
+}
+
+/**
+ * Gönderilmiş klasöründe, gövdesinde bu takip kimliğinin pikseli geçen maili
+ * arar (son `days` gün, en yeni 50 konuşma). Bulamazsa null döner.
+ */
+function findSentById_(id, days) {
+  if (!/^[0-9a-f]{12}$/.test(id)) return null; // test ve sahte kimlikler için arama yapma
+  const marker = "/o/" + id + ".gif";
+  try {
+    const threads = GmailApp.search("in:sent newer_than:" + (days || 30) + "d", 0, 50);
+    for (const thread of threads) {
+      for (const m of thread.getMessages()) {
+        if (!m.isDraft() && m.getBody().indexOf(marker) !== -1) return m;
+      }
+    }
+  } catch (err) {
+    console.log("Gmail araması başarısız: " + err);
+  }
+  return null;
+}
+
+function recipientsOf_(m) {
+  const found = [m.getTo(), m.getCc(), m.getBcc()]
+    .join(",")
+    .match(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi);
+  if (!found) return "";
+  const list = found.map((e) => e.toLowerCase());
+  return list.filter((e, i) => list.indexOf(e) === i).join(", ");
+}
+
+function sentRowFromMessage_(id, m) {
+  const row = new Array(SENT_HEADERS.length).fill("");
+  row[C.ID] = id;
+  row[C.EMAIL] = recipientsOf_(m);
+  row[C.SUBJECT] = m.getSubject() || "";
+  row[C.METHOD] = METHOD_CHROME;
+  row[C.CREATED] = m.getDate();
+  row[C.OPENS] = 0;
+  row[C.SUSPICIOUS] = 0;
+  row[C.CLICKS] = 0;
+  return row;
+}
+
+/**
+ * Menü: Olaylar'da olup Gönderimler'de satırı olmayan takip kimliklerini
+ * Gönderilmiş klasöründe bulur; satırı açar, sayaçları olaylardan yeniden
+ * hesaplar ve Olaylar'daki boş E-posta / Konu hücrelerini doldurur.
+ */
+function fillMissing() {
+  const ss = SpreadsheetApp.getActive();
+  const sent = ss.getSheetByName(SH.SENT);
+  const events = ss.getSheetByName(SH.EVENTS);
+  const known = sent.getLastRow() > 1
+    ? sent.getRange(2, 1, sent.getLastRow() - 1, 1).getValues().map((r) => String(r[0]))
+    : [];
+  const ev = events.getLastRow() > 1
+    ? events.getRange(2, 1, events.getLastRow() - 1, EVENT_HEADERS.length).getValues()
+    : [];
+  const ids = ev
+    .map((r) => String(r[1]))
+    .filter((id, i, a) => /^[0-9a-f]{12}$/.test(id) && known.indexOf(id) === -1 && a.indexOf(id) === i);
+
+  let fixed = 0;
+  const missing = [];
+  ids.forEach((id) => {
+    const m = findSentById_(id, 90);
+    if (!m) {
+      missing.push(id);
+      return;
+    }
+    const row = sentRowFromMessage_(id, m);
+    ev.forEach((r, i) => {
+      if (String(r[1]) !== id) return;
+      const ts = r[0] instanceof Date ? r[0] : new Date(r[0]);
+      const net = String(r[8] || "").split(" ");
+      const d = {
+        type: r[4] === "Tıklama" ? "click" : "open",
+        url: r[5],
+        country: r[7],
+        asn: net[0],
+        org: net.slice(1).join(" "),
+        ua: r[9],
+      };
+      const verdict = classify_(d, row, ts);
+      applyEvent_(row, d, ts, verdict);
+      events.getRange(i + 2, 3, 1, 2).setValues([[row[C.EMAIL], row[C.SUBJECT]]]);
+      events.getRange(i + 2, 7).setValue(verdict.label);
+    });
+    sent.appendRow(row);
+    fixed++;
+  });
+
+  SpreadsheetApp.getUi().alert(
+    fixed + " mail tamamlandı." +
+      (missing.length ? "\nGönderilmiş klasöründe bulunamayanlar: " + missing.join(", ") : "")
+  );
 }
 
 /** Taslak hâlâ duruyorsa olay sizin önizlemenizdir; silinmişse gönderilmiştir. */
@@ -502,10 +617,8 @@ function refreshAddonStatus_(row, sentLabel) {
   }
   row[C.METHOD] = sentLabel || "Eklenti — gönderildi";
   row[C.CREATED] = sent.getDate();
-  const to = [sent.getTo(), sent.getCc(), sent.getBcc()]
-    .join(",")
-    .match(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi);
-  if (to && to.length) row[C.EMAIL] = to.map((e) => e.toLowerCase()).join(", ");
+  const to = recipientsOf_(sent);
+  if (to) row[C.EMAIL] = to;
   row[C.SUBJECT] = sent.getSubject() || row[C.SUBJECT];
 }
 

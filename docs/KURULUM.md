@@ -100,7 +100,7 @@ Script ile gönderim kotası normal Gmail hesabında günde yaklaşık 100, Goog
 
 - **Apps Script (Sheet):** Kodu değiştirdikten sonra **Dağıt → Dağıtımları yönet → ✏️ → Sürüm: Yeni sürüm → Dağıt** yolunu izle. Bunu yapmazsan web uygulaması eski kodla çalışmaya devam eder. Adres değişmez.
 - **Worker:** Cloudflare'de **Edit code** ekranına yeni kodu yapıştır ve **Deploy**'a bas.
-- **Chrome eklentisi:** Dosyaları klasörün üzerine kopyala, `chrome://extensions` sayfasında **↻**'ye bas ve Gmail sekmesini kapatıp yeniden aç. Ayarlar silinmez.
+- **Chrome eklentisi:** Dosyaları klasörün üzerine kopyala, `chrome://extensions` sayfasında **↻**'ye bas ve **açık bütün Gmail sekmelerini kapatıp yeniden aç**. Yenilenmeyen sekmede eski kod çalışmaya devam eder ve Sheet'e kayıt gönderemez. Ayarlar silinmez.
 
 ## Sorun giderme
 
@@ -113,3 +113,4 @@ Script ile gönderim kotası normal Gmail hesabında günde yaklaşık 100, Goog
 | Açılmalar "Taslak önizlemesi" olarak görünüyor | Mail hâlâ Taslaklar'da, ya da Gönderilmiş klasöründe takip kimliği bulunamadı |
 | Çok sayıda "Şüpheli açılma" | Alıcı Apple Mail kullanıyor ya da kurumsal güvenlik tarayıcısı maili tarıyor. Tıklama verisine bak |
 | Linke tıklanınca "Geçersiz bağlantı" | Chrome eklentisindeki SECRET ile Worker'daki SECRET farklı |
+| Olaylar'da E-posta ve Konu boş | Mail, eklenti güncellendikten sonra yenilenmemiş bir Gmail sekmesinden gönderilmiş. Yeni sürümde ilk açılmada Gönderilmiş klasöründen otomatik tamamlanır. Eski kayıtlar için **📬 Mail Takip → Eksik alıcı/konu bilgilerini tamamla** |
